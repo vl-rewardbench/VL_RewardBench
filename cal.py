@@ -231,7 +231,7 @@ def distribution_dataset(distribution):
         group_total[group_mapping[dataset]] += dataset_distribution[dataset]["agree_number"] 
         group_total[group_mapping[dataset]] += dataset_distribution[dataset]["reject_number"] 
         
-    # DATASET level accuracy 
+    # print DATASET level accuracy if needed 
     # print(
     #     dataset_distribution['rlaif-v']['accept_rate'],
     #     dataset_distribution['rlhf-v']['accept_rate'],
@@ -240,18 +240,26 @@ def distribution_dataset(distribution):
     #     dataset_distribution['wildvision-battle']['accept_rate'],
     # )
 
-    # for group in ["general", "hallucination", "reasoning"]:
+    print("=" * 20 )
     print("general\t hallucination\t reasoning")
-    print( "{:.4f} {:.4f} {:.4f}".format(group_correct["general"] / group_total["general"],  group_correct["hallucination"] / group_total["hallucination"],group_correct["reasoning"] / (group_total["reasoning"] + 1e-6)))
+    print( "{:.2f}\t {:.2f}\t {:.2f}".format(100.0 * group_correct["general"] / group_total["general"],  100.0 * group_correct["hallucination"] / group_total["hallucination"], 100.0 * group_correct["reasoning"] / (group_total["reasoning"] + 1e-6)))
+    task_list =  ['reasoning', 'hallucination', 'general']
+    macro_average = sum( group_correct[k]/group_total[k] for k in task_list) / 3 
+    
+    #(group_correct["general"] / group_total["general"] + group_correct["hallucination"] / group_total["hallucination"] + group_correct["reasoning"] / group_total["reasoning"]) / 3 
+    overall_acc = sum(group_correct[k] for k in  task_list ) / sum(group_total[k] for k in task_list)
+    print("Overall Accuracy: {:.2f}".format(overall_acc * 100) )
+    print("Macro Average Acc: {:.2f}".format(macro_average * 100))
+    print("=" * 20 )
     return dataset_distribution
 
 def main():
     random.seed(1234)
-    input_path =  "./data/infer_results/gpt-4o-1023.jsonl"
+    input_path =  "./infer_results/meta-Llama-3.2-90B-Vision-Instruct-1025.jsonl" # replace the inference results here 
     print(input_path)
 
-    for i in [1, 3, 5, 7,9]:
-        distributions = distribution(input_path, k=i, reparse=True, use_llm_parse=False)
+    for i in [1, 3, 5, 7, 9]: # varying K for inference times 
+        distributions = distribution(input_path, k=i, reparse=True, use_llm_parse=False) # set use_llm_parse to use LLMs for some cases cannot matched
         filtered_distributions = filter_out_doesntMatch(distributions)
         classified_distributions = classify(distributions, k=i)
         dataset_distribution = distribution_dataset(classified_distributions)

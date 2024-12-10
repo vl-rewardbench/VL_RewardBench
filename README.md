@@ -12,4 +12,4 @@ python inference_hf.py \
 ```
 
 # Metric
-You can use `cal.py` to evaluate the model's performance. Simply update the data path in the script to match your dataset.
+You can use `cal.py` to evaluate the model's performance. Simply update the data path in the script to match the output file.

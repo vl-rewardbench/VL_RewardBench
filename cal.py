@@ -35,8 +35,30 @@ def parse_by_llm(response, model="gpt-4o-mini"):
         max_tokens=32)
     return response.choices[0].message.content.strip() 
 
-
-
+###TODO Optimized
+def get_dataset_from_id(id:str):
+    dataset=["povid","reasoning_tasks","rlaif-v","rlhf-v","vlfeedback","wildvision-battle"]
+    def get_id_prefix(id_value:str):
+        split_index = min((id_value.find('_'), id_value.find('-')), key=lambda x: x if x != -1 else float('inf'))
+        if split_index != -1:
+            id_prefix = id_value[:split_index]
+        else:
+            id_prefix = id_value
+            
+        return id_prefix
+    
+    id_prefix=get_id_prefix(id)
+    if id_prefix=="RLAIF":
+        return "rlaif-v"
+    elif id_prefix=="RLHF":
+        return "rlhf-v"
+    elif id_prefix=="mathverse" or id_prefix=="mmmu":
+        return "reasoning_tasks"
+    elif id_prefix=="wildvision":
+        return "wildvision-battle"
+    else:
+        return "vlfeedback"
+    
 def shuffle_data(data):
     # random.seed(time.time())
     for i in range(len(data)):
@@ -66,7 +88,7 @@ def distribution(input_path, k=10, reparse=False, use_llm_parse=False):
         if item is None:
             continue 
         id = item["id"] + item["query"] + "\t".join(sorted(item["response"]))
-        dataset = item["image_path"].split("/")[1]
+        dataset = get_dataset_from_id(item["id"])
         flag_status = item["meta"]["flag_status"]
         # 
         if reparse:

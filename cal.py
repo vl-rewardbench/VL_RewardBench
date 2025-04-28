@@ -48,14 +48,16 @@ def get_dataset_from_id(id:str):
         return id_prefix
     
     id_prefix=get_id_prefix(id)
-    if id_prefix=="RLAIF":
+    if id_prefix == "RLAIF":
         return "rlaif-v"
-    elif id_prefix=="RLHF":
+    elif id_prefix == "RLHF":
         return "rlhf-v"
-    elif id_prefix=="mathverse" or id_prefix=="mmmu":
+    elif id_prefix == "mathverse" or id_prefix == "mmmu":
         return "reasoning_tasks"
-    elif id_prefix=="wildvision":
+    elif id_prefix == "wildvision":
         return "wildvision-battle"
+    elif id_predix.lower() == 'povid':
+        return "povid" # fix povid bug 
     else:
         return "vlfeedback"
     

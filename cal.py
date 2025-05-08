@@ -56,7 +56,7 @@ def get_dataset_from_id(id:str):
         return "reasoning_tasks"
     elif id_prefix == "wildvision":
         return "wildvision-battle"
-    elif id_predix.lower() == 'povid':
+    elif id_prefix == 'hallucination':
         return "povid" # fix povid bug 
     else:
         return "vlfeedback"
